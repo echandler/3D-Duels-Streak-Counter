@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         3d Duels country streak counter v0.7
+// @name         3d Duels country streak counter v0.71
 // @description  Webgl country streak counter for Geoguessr duels. 
 // @namespace    3d duels country streak counter 
-// @version      0.7
+// @version      0.71
 // @author       echandler
 // @match        https://www.geoguessr.com/*
 // @run-at       document-start
@@ -16,10 +16,12 @@
     "use strict";
 
     const gameInfo = localStorage['duelsStreakCounter']? JSON.parse(localStorage['duelsStreakCounter']): {score: 2, curRound: null, x: 10, y: 10};
-
+    
     let _3dCounter = null;
 
     let streetViewObj = null;
+    
+    let sgsMissingAlertInt = 0;
 
     let timer = setInterval(function(){
          if (!window?.google && /geoguessr.com.duels/i.test(location.href)){
@@ -127,16 +129,21 @@
 
             if (window.sgs){
 
-                let pinLocation   = await sgs.reverse({lat: _info.req.lat, lng: _info.req.lng});
-               // let spawnLocation = await sgs.reverse({lat: spawn.lat, lng: spawn.lng});
-                  let spawnLocation = gameInfo.curRound.spawnLocation;
+                let pinLocation = await sgs.reverse({ lat: _info.req.lat, lng: _info.req.lng });
+                let spawnLocation = gameInfo.curRound.spawnLocation;
 
-                event.trigger('streak location info', {pinLocation, spawnLocation, roundNumber: _info.req.roundNumber});
+                event.trigger('streak location info', { pinLocation, spawnLocation, roundNumber: _info.req.roundNumber });
 
             } else {
 
-                // TODO: Notify player that they need to install sgs.
+                if (sgsMissingAlertInt % 10 == 0){
+                   let _confirm = confirm("3d Duels Streak Counter needs the Simple Reverse Geocoding Script to be installed. Do you want to install it now?");
+                   if (_confirm){
+                       window.open('https://github.com/echandler/Simple-Reverse-Geocoding-Script');
+                   }
+                }
 
+                sgsMissingAlertInt += 1;
             }
         });
 
@@ -672,7 +679,7 @@
 
             let _this = this;
 
-            this.gameInfo = window.gameInfo;
+            this.gameInfo = gameInfo;
 
             this.THREE = window.THREE;
 
@@ -922,7 +929,7 @@
                 _this.line.geometry.setFromPoints([]);
 
                 if (obj.group.mouseOver){
-                    document.body.addEventListener( 'mousemove', onPointerMove );
+                    document.body.addEventListener('mousemove', onPointerMove);
 
                     _this.triggerMouseEvent(document.body, 'mouseup');
 
@@ -935,15 +942,10 @@
                     _this.spinEvents(event);
                     _this.flickEvents(event);
 
-                    el = true;//document.querySelector('div[data-qa="round-number"]');
-
-                    if (el){
-
-                        md.x = event.clientX;
-                        md.y = event.clientY;
-                        md._x = obj.group.position.x;
-                        md._y = obj.group.position.y;
-                    }
+                    md.x = event.clientX;
+                    md.y = event.clientY;
+                    md._x = obj.group.position.x;
+                    md._y = obj.group.position.y;
 
                 }
 
@@ -971,10 +973,8 @@
             this.rotateScoreContinuousTimer = setInterval(()=>{
                 hue += 0.01;
 
-                //this.pointLight.color.setHSL(hue % 1 , this.HSLColor.l, this.HSLColor.s);
                 this.mainScore.spotLight.color.setHSL(hue % 1 , this.HSLColor.l, this.HSLColor.s);
 
-                // this.HSLColor.h = Math.random();
                 this.targetRotation += 0.055;
             }, 50);
         }
@@ -983,40 +983,8 @@
 
         clearRotateScoreContinuous(){
             clearInterval(this.rotateScoreContinuousTimer);
-            // this.pointLight.color.setHSL( this.HSLColor.h , this.HSLColor.l, this.HSLColor.s );
             this.mainScore.spotLight.color.setHSL( this.HSLColor.h , this.HSLColor.l, this.HSLColor.s );
         }
-
-
-//        waitToUpdate(){
-//            let _this = this;
-//
-//            document.addEventListener('click', _click_);
-//
-//            let _evtObj = window._evt.on('keep streak going', (ans)=>{
-//                document.removeEventListener('click', _click_);
-//
-//                this.clearRotateScoreContinuous();
-//
-//                window._evt.off(_evtObj);
-//            });
-//
-//            let _evtObjMsg = window._evt.on("remove keep streak going message", ()=>{
-//                window._evt.off(_evtObj);
-//                window._evt.off(_evtObjMsg);
-//            });
-//
-//            function _click_(e){
-//                if (/button/i.test(e.target.className) || e.target.nodeName === "BUTTON"){
-//                    document.removeEventListener('click', _click_);
-//
-//                    setTimeout(()=> {
-//                        _this.clearRotateScoreContinuous();
-//                        _this._updateAnimation()
-//                    }, 2000);
-//                }
-//            }
-//        }
 
         setCounterSize(num){
 
@@ -1494,7 +1462,7 @@
             if (stateObj)
                 this.refreshMainScore(stateObj);
             if (this.mainScoreNum == '0') return;
-debugger;
+
             if (this.gameInfo?.doExplodeScore){
                 let p = await this.explodeAnimation();
             }
@@ -1960,7 +1928,12 @@ debugger;
 
             document.addEventListener('keypress', function(evt){
                 if (evt.key === '!'){
-                    delete localStorage['duelsStreakCounter'];
+
+                    if (confirm('Do you want to delete your setting for 3D Duels Streak Counter?')){
+
+                        delete localStorage['duelsStreakCounter'];
+                    
+                    }
                 }
            });
         }

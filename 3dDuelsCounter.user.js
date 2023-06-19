@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         3d Duels country streak counter v0.71
+// @name         3d Duels country streak counter v0.72
 // @description  Webgl country streak counter for Geoguessr duels. 
 // @namespace    3d duels country streak counter 
-// @version      0.71
+// @version      0.72
 // @author       echandler
 // @match        https://www.geoguessr.com/*
 // @run-at       document-start
@@ -96,6 +96,14 @@
             modifySetPos();
         });
 
+        event.addListener('spawn found', ()=>{
+            if(_3dCounter || gameInfo.scriptDisabled) return;
+
+            _3dCounter = new make3DCounter();
+
+        });
+
+
         event.addListener('spawn found', async ()=>{
             let _info = event.obj['spawn found'];
 
@@ -109,13 +117,6 @@
             console.log('spawn found', _info );
 
             event.trigger('wait for end of round');
-        });
-
-        event.addListener('spawn found', ()=>{
-            if(_3dCounter || gameInfo.scriptDisabled) return;
-
-            _3dCounter = new make3DCounter();
-
         });
 
         event.addListener('script disabled', ()=>{
@@ -1266,6 +1267,14 @@
             state1Obj.spotLightAngle = +this?.gameInfo?.state1SpotLightAngle || (Math.PI/2.5);
             state1Obj.x = this?.gameInfo?.state1XY?.x || 10;
             state1Obj.y = this?.gameInfo?.state1XY?.y || 10;
+            
+            if (state1Obj.x > window.innerWidth/2 || state1Obj.x < -(window.innerWidth/2)){
+                state1Obj.x = 0;
+            }
+
+            if (state1Obj.y > window.innerHeight/2 || state1Obj.y < -(window.innerHeight/2)){
+                state1Obj.y = 0;
+            }
 
             state1Obj.setXY = (x, y) =>{
                 this.gameInfo.state1XY = {x, y};
@@ -1286,6 +1295,14 @@
             state2Obj.spotLightAngle = +this?.gameInfo?.state2SpotLightAngle || (Math.PI/4.5);
             state2Obj.x = this?.gameInfo?.state2XY?.x || 10;
             state2Obj.y = this?.gameInfo?.state2XY?.y || 10;
+
+            if (state2Obj.x > window.innerWidth/2 || state2Obj.x < -(window.innerWidth/2)){
+                state2Obj.x = 0;
+            }
+
+            if (state2Obj.y > window.innerHeight/2 || state2Obj.y < -(window.innerHeight/2)){
+                state2Obj.y = 0;
+            }
 
             state2Obj.setXY = (x, y) =>{
                 this.gameInfo.state2XY = {x, y};
@@ -1421,6 +1438,14 @@
 
             let x = this.gameInfo?.answerTextXY?.x || 10;
             let y = this.gameInfo?.answerTextXY?.y || 10;
+
+            if (x > window.innerWidth/2 || x < -(window.innerWidth/2)){
+                x = 0;
+            }
+
+            if (y > window.innerHeight/2 || y < -(window.innerHeight/2)){
+                y = 0;
+            }
 
             this.guessText.group.position.x = x;//_this.pointer.x * (_this.w/2) ;
             this.guessText.group.position.y = y;//_this.pointer.y * (_this.h/2) ;

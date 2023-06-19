@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         3d Duels country streak counter v0.72
+// @name         3d Duels country streak counter v0.73
 // @description  Webgl country streak counter for Geoguessr duels. 
 // @namespace    3d duels country streak counter 
-// @version      0.72
+// @version      0.73
 // @author       echandler
 // @match        https://www.geoguessr.com/*
 // @run-at       document-start
@@ -22,6 +22,8 @@
     let streetViewObj = null;
     
     let sgsMissingAlertInt = 0;
+    
+    let fetchWasModified = false;
 
     let timer = setInterval(function(){
          if (!window?.google && /geoguessr.com.duels/i.test(location.href)){
@@ -257,8 +259,10 @@
 
     window.fetch = (function () {
         let _fetch = window.fetch;
-
+        
         return async function (...args) {
+            fetchWasModified = true;
+
             if (!/geoguessr.com.(duels)/i.test(location.href)) {
 
                 if (/geoguessr.com.api.v4/i.test(args[0])) {
@@ -780,6 +784,10 @@
                 this.makeState2(obj, this.mainScoreNum);
 
                 let num = obj.score;
+                
+                if (fetchWasModified === false){
+                    alert("window.fetch was not modified. Refreshing the page should fix the problem.")
+                }
 
                 this.makeGuessText(obj);
 

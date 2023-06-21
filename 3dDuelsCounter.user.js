@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         3d Duels country streak counter v0.73
+// @name         3d Duels country streak counter v0.74
 // @description  Webgl country streak counter for Geoguessr duels. 
 // @namespace    3d duels country streak counter 
-// @version      0.73
+// @version      0.74
 // @author       echandler
 // @match        https://www.geoguessr.com/*
 // @run-at       document-start
@@ -100,7 +100,7 @@
 
         event.addListener('spawn found', ()=>{
             if(_3dCounter || gameInfo.scriptDisabled) return;
-
+            
             _3dCounter = new make3DCounter();
 
         });
@@ -664,6 +664,9 @@
             this.appendTHREEJSscript()
                 .then(()=>{
                 //extrudeIt(window.THREE);
+                if (document.getElementById('3D_Streak_Counter')) {
+                    return;
+                }
                 this.init();
                 this.animate();
             }).catch((e)=>{
@@ -849,6 +852,11 @@
             this.appendTODOMInterval = setInterval(()=>{
                 let el = true; //document.querySelector('[data-qa="undo-move"]');
                 let isDuels = /geoguessr.com.(duels)/i.test(location.href);
+
+                if (this.unloaded){
+                    clearInterval(this.appendTODOMInterval);
+                    return;
+                }
 
                 if (!el || !isDuels){
                     this.container.style.display = 'none';
@@ -1625,7 +1633,7 @@
             this.events.forEach((evt)=>{
                 window._evt.off(evt);
             });
-
+            
             this.unloaded = true;
         }
 

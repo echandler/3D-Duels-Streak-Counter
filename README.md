@@ -1,6 +1,6 @@
 # 3D Duels Streak Counter
 
-## How to install Chrome Extension (recommended):
+## How to install Chrome Extension (if it's not on Chrome webstore it won't update):
 1. Download .zip file and extract somewhere.
 2. Open Chrome extensions page.
 3. Click developer mode in the upper right.

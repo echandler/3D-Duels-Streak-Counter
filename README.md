@@ -14,7 +14,7 @@
 ## How to use:
 1. To clear the settings press "!" (exclamation mark). If something happens with the counter, clearing the settings might fix it.
 2. Press "CTRL" to make a squiggly line, with the mouse, around something you want to highlight.
-3. Press "ESC" to access the menu.
+3. Press "ESC" to access the menu (userscript only, with extension click icon on taskbar).
 4. My currents "settings" in the menu:
    * State1 size: 20 (Score during game.)
    * State1 angle: 0.1 (Spotlight size, THREEJS calls it the spotlight angle.)

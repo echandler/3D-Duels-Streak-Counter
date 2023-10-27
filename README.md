@@ -1,3 +1,5 @@
+``⚠️`` Installing any script could get your account banned.
+
 # 3D Duels Streak Counter
 
 ## How to install Chrome Extension (if it's not on Chrome webstore it won't update):
